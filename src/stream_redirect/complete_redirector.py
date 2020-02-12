@@ -19,13 +19,13 @@ class CompleteRedirector(object):
         self._saved_fd = os.dup(self._original_fd)
         self.tmpfile = tempfile.TemporaryFile(mode="w+b")
         self._redirect_src(self.tmpfile.fileno())
-        # yield
 
     def end(self):
         self._redirect_src(self._saved_fd)
         self.tmpfile.flush()
         self.tmpfile.seek(0, io.SEEK_SET)
         self.output = self.tmpfile.read().decode(self._original.encoding)
+        self.tmpfile.close()
 
     def _redirect_src(self, fd):
         libc.fflush(self._c_src)
