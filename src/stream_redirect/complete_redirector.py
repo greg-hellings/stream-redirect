@@ -16,7 +16,7 @@ class CompleteRedirector(object):
         """
         The standard C library on target systems
         """
-        if sys.platform == "windows":
+        if sys.platform.startswith('win'):
             if sys.version_info < (3, 5):
                 return ctypes.CDLL(ctypes.util.find_library('c'))
             else:
@@ -32,9 +32,9 @@ class CompleteRedirector(object):
         """
         The file descriptor for std{out,err} on the current system
         """
-        if sys.platform == "darwin":
+        if sys.platform.startswith('darwin'):
             return ctypes.c_void_p.in_dll(self.libc, '__{}p'.format(self._src))
-        elif sys.platform == "windows":
+        elif sys.platform.startswith('win'):
             kernel32 = ctypes.WinDLL('kernel32')
             # Magic numbers drawn from the Microsoft API
             # stdin is -10
