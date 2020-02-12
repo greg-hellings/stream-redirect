@@ -67,7 +67,10 @@ class CompleteRedirector(object):
             os.close(self._saved_fd)
 
     def _redirect_src(self, fd):
-        self.libc.fflush(self._c_src)
+        if sys.platform.startswith('win'):
+            self.libc.fflush(None)
+        else:
+            self.libc.fflush(self._c_src)
         # Close the stream, including the fd
         getattr(sys, self._src).close()
         # Make the original point to the same file as our target
