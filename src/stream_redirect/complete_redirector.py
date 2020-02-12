@@ -6,20 +6,45 @@ import sys
 import tempfile
 
 
-libc = ctypes.CDLL(None)
-
-
 class CompleteRedirector(object):
     def __init__(self, src):
         self._src = src
         self._encoding = getattr(sys, self._src).encoding
 
     @property
+    def libc(self):
+        """
+        The standard C library on target systems
+        """
+        if sys.platform == "windows":
+            if sys.version_info < (3, 5):
+                return ctypes.CDLL(ctypes.util.find_library('c'))
+            else:
+                if hasattr(sys, 'gettotalrefcount'):  # debug build
+                    return ctypes.CDLL('ucrtbased')
+                else:
+                    return ctypes.CDLL('api-ms-win-crt-stdio-l1-1-0')
+        else:
+            return ctypes.CDLL(None)
+
+    @property
     def _c_src(self):
+        """
+        The file descriptor for std{out,err} on the current system
+        """
         if sys.platform == "darwin":
-            return ctypes.c_void_p.in_dll(libc, '__{}p'.format(self._src))
-        elif sys.platform in ("linux", "linux32"):
-            return ctypes.c_void_p.in_dll(libc, self._src)
+            return ctypes.c_void_p.in_dll(self.libc, '__{}p'.format(self._src))
+        elif sys.platform == "windows":
+            kernel32 = ctypes.WinDLL('kernel32')
+            # Magic numbers drawn from the Microsoft API
+            # stdin is -10
+            if self._src == "stdout":
+                HANDLE = -11
+            elif self._src == "stderr":
+                HANDLE = -12
+            return kernel32.GetStdHandle(HANDLE)
+        else:
+            return ctypes.c_void_p.in_dll(self.libc, self._src)
 
     def begin(self):
         # The original fd for the system stream
@@ -42,7 +67,7 @@ class CompleteRedirector(object):
             os.close(self._saved_fd)
 
     def _redirect_src(self, fd):
-        libc.fflush(self._c_src)
+        self.libc.fflush(self._c_src)
         # Close the stream, including the fd
         getattr(sys, self._src).close()
         # Make the original point to the same file as our target
