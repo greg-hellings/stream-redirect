@@ -74,4 +74,5 @@ jobs:
       - name: Run coverage
         run: |
           python -m pip install tox
+          mv coverage-results/.coverage.* .
           tox -e coverage
