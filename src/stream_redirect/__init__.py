@@ -33,7 +33,7 @@ class Redirect(object):
             raise NotImplementedError("stdout capture not requested")
 
     @property
-    def stderr_lines(self):
+    def stderr(self):
         try:
             return self.redirectors["stderr"].output
         except KeyError:

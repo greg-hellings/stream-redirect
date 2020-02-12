@@ -6,29 +6,29 @@ from unittest import TestCase
 from stream_redirect import Redirect
 
 
-class TestStdout(TestCase):
+class TestStderr(TestCase):
     def test_gets_python_output(self):
         """
         Tests that only ouptut from the Python code will be collected and not
         anything from system calls or from the underlying C library code.
         """
         expected_output = "Some string"
-        stderr_not_found = "stderr string"
+        stdout_not_found = "stdout string"
         not_found = "not found"
         also = "also not found"
         # Write directly out from C code
         libc = ctypes.CDLL(None)
         # Do the attempt
-        cm = Redirect(python_only=True)
+        cm = Redirect(python_only=True, stderr=True, stdout=False)
         with cm:
-            print(expected_output)
-            print(stderr_not_found, file=sys.stderr)
+            print(expected_output, file=sys.stderr)
+            print(stdout_not_found)
             os.system("echo {not_found}")
             libc.puts(also.encode("UTF-8"))
-        self.assertIn(expected_output, cm.stdout)
-        self.assertNotIn(stderr_not_found, cm.stdout)
-        self.assertNotIn(not_found, cm.stdout)
-        self.assertNotIn(also, cm.stdout)
+        self.assertIn(expected_output, cm.stderr)
+        self.assertNotIn(stdout_not_found, cm.stderr)
+        self.assertNotIn(not_found, cm.stderr)
+        self.assertNotIn(also, cm.stderr)
 
     def test_gets_all_output(self):
         """
@@ -40,19 +40,11 @@ class TestStdout(TestCase):
         c_code = "c code"
         libc = ctypes.CDLL(None)
         # Make the attempt
-        cm = Redirect()
+        cm = Redirect(stderr=True, stdout=False)
         with cm:
-            print(py_out)
-            os.system("echo {}".format(sys_call))
-            libc.puts(c_code.encode(sys.stdout.encoding))
-        self.assertIn(py_out, cm.stdout)
-        self.assertIn(sys_call, cm.stdout)
-        self.assertIn(c_code, cm.stdout)
-
-    def test_raises_errors(self):
-        cm = Redirect()
-        with self.assertRaises(NotImplementedError):
-            cm.stderr
-        cm = Redirect(stdout=False)
-        with self.assertRaises(NotImplementedError):
-            cm.stdout
+            print(py_out, file=sys.stderr)
+            os.system("echo {} 1>&2".format(sys_call))
+            libc.puts(c_code.encode(sys.stderr.encoding))
+        self.assertIn(py_out, cm.stderr)
+        self.assertIn(sys_call, cm.stderr)
+        self.assertNotIn(c_code, cm.stderr)  # puts still doesn't go to stderr
