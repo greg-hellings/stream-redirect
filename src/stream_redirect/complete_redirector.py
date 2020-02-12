@@ -12,8 +12,14 @@ libc = ctypes.CDLL(None)
 class CompleteRedirector(object):
     def __init__(self, src):
         self._src = src
-        self._c_src = ctypes.c_void_p.in_dll(libc, self._src)
         self._encoding = getattr(sys, self._src).encoding
+
+    @property
+    def _c_src(self):
+        if sys.platform == "darwin":
+            return ctypes.c_void_p.in_dll(libc, '__{}p'.format(self._src))
+        elif sys.platform in ("linux", "linux32"):
+            return ctypes.c_void_p.in_dll(libc, self._src)
 
     def begin(self):
         # The original fd for the system stream
