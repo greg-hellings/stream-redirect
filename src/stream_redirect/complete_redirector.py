@@ -36,7 +36,7 @@ class CompleteRedirector(object):
             # Save the contents of the written file
             self.tmpfile.flush()
             self.tmpfile.seek(0, io.SEEK_SET)
-            self.output = self.tmpfile.read().decode(self._encoding)
+            self.output = six.ensure_str(self.tmpfile.read())
         finally:
             self.tmpfile.close()
             os.close(self._saved_fd)
