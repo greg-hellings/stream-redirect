@@ -13,7 +13,7 @@ jobs:
         with:
           python-version: "3.x"
       - uses: actions/cache@v1
-        with: &cache
+        with: # Later, make this an anchor
           path: ~/.cache/pip
           key: pip-${{ runner.os }}-${{ hashFiles('setup.py') }}
           restore-keys: |
@@ -35,7 +35,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - uses: actions/cache@v1
-        with: *cache
+        with: # Make anchor reference
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('setup.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+            pip-
       - name: Run test
         run: |
           python -m pip install tox
@@ -54,7 +59,12 @@ jobs:
         with:
           python-version: "3.x"
       - uses: actions/cache@v1
-        with: *cache
+        with: # Make anchor reference
+          path: ~/.cache/pip
+          key: pip-${{ runner.os }}-${{ hashFiles('setup.py') }}
+          restore-keys: |
+            pip-${{ runner.os }}-
+            pip-
       - uses: actions/download-artifact@master
         with:
           name: coverage-results
