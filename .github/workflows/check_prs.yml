@@ -47,12 +47,12 @@ jobs:
           python -m pip install tox
           tox -e py
         env:
-          COVERAGE_FILE: .coverage.${{ matrix.python }}
+          COVERAGE_FILE: .coverage.${{ matrix.python }}.${{ runner.os }}
       - name: Upload artifacts
         uses: actions/upload-artifact@master
         with:
           name: coverage-results
-          path: .coverage.${{ matrix.python }}
+          path: .coverage.${{ matrix.python }}.${{ runner.os }}
   coverage:
     needs: test
     runs-on: ubuntu-latest
