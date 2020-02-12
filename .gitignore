@@ -4,3 +4,4 @@
 *.pyo
 *.egg-info
 .coverage
+.coverage.*
