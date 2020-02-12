@@ -53,6 +53,7 @@ jobs:
         with:
           name: coverage-results
           path: .coverage.${{ matrix.python }}.${{ runner.os }}
+        if: matrix.python != "3.4"  # 3.4 doesn't support newer coverage
   coverage:
     needs: test
     runs-on: ubuntu-latest
