@@ -13,6 +13,7 @@ class TestStdout(TestCase):
         anything from system calls or from the underlying C library code.
         """
         expected_output = "Some string"
+        stderr_not_found = "stderr string"
         not_found = "not found"
         also = "also not found"
         # Write directly out from C code
@@ -21,9 +22,11 @@ class TestStdout(TestCase):
         cm = Redirect(python_only=True)
         with cm:
             print(expected_output)
+            print(stderr_not_found, file=sys.stderr)
             os.system("echo {not_found}")
             libc.puts(also.encode("UTF-8"))
         self.assertIn(expected_output, cm.stdout)
+        self.assertNotIn(stderr_not_found, cm.stdout)
         self.assertNotIn(not_found, cm.stdout)
         self.assertNotIn(also, cm.stdout)
 
