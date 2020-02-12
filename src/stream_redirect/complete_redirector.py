@@ -4,6 +4,7 @@ import os
 import six
 import sys
 import tempfile
+from ctypes.util import find_library
 
 
 class CompleteRedirector(object):
@@ -18,7 +19,7 @@ class CompleteRedirector(object):
         """
         if sys.platform.startswith('win'):
             if sys.version_info < (3, 5):
-                return ctypes.CDLL(ctypes.util.find_library('c'))
+                return ctypes.CDLL(find_library('c'))
             else:
                 if hasattr(sys, 'gettotalrefcount'):  # debug build
                     return ctypes.CDLL('ucrtbased')
