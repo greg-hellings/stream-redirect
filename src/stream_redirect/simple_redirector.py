@@ -1,4 +1,4 @@
-import io
+import six
 import sys
 
 
@@ -8,7 +8,7 @@ class SimpleRedirector(object):
 
     def begin(self):
         self._original = getattr(sys, self._src)
-        self._dest = io.StringIO()
+        self._dest = six.StringIO()
         setattr(sys, self._src, self._dest)
 
     def end(self):

@@ -1,6 +1,7 @@
 from __future__ import print_function
 import ctypes
 import os
+import six
 import sys
 from unittest import TestCase
 from stream_redirect import Redirect
@@ -24,7 +25,7 @@ class TestStderr(TestCase):
             print(expected_output, file=sys.stderr)
             print(stdout_not_found)
             os.system("echo {not_found}")
-            libc.puts(also.encode("UTF-8"))
+            libc.puts(six.ensure_binary(also))
         self.assertIn(expected_output, cm.stderr)
         self.assertNotIn(stdout_not_found, cm.stderr)
         self.assertNotIn(not_found, cm.stderr)
@@ -44,7 +45,7 @@ class TestStderr(TestCase):
         with cm:
             print(py_out, file=sys.stderr)
             os.system("echo {} 1>&2".format(sys_call))
-            libc.puts(c_code.encode(sys.stderr.encoding))
+            libc.puts(six.ensure_binary(c_code))
         self.assertIn(py_out, cm.stderr)
         self.assertIn(sys_call, cm.stderr)
         self.assertNotIn(c_code, cm.stderr)  # puts still doesn't go to stderr

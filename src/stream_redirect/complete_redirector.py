@@ -1,6 +1,7 @@
 import ctypes
 import io
 import os
+import six
 import sys
 import tempfile
 
@@ -41,5 +42,8 @@ class CompleteRedirector(object):
         # Make the original point to the same file as our target
         os.dup2(fd, self._original_fd)
         # Creates a new stream that points to the redirected fd
-        wrap = io.TextIOWrapper(os.fdopen(self._original_fd, "wb"))
+        if six.PY3:
+            wrap = io.TextIOWrapper(os.fdopen(self._original_fd, "wb"))
+        else:
+            wrap = os.fdopen(self._original_fd, "wb")
         setattr(sys, self._src, wrap)

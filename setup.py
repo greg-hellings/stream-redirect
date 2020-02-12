@@ -14,7 +14,7 @@ setup(
     version='0.1',
     package_dir={'': 'src'},
     packages=find_packages('src'),
-    install_requires=[],
+    install_requires=['six'],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     classifiers=[
         'Development Status :: 3 - Alpha',
