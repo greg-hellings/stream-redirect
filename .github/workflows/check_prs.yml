@@ -74,8 +74,9 @@ jobs:
           name: coverage-results
       - name: Run coverage
         run: |
-          python -m pip install tox
+          python -m pip install tox coveralls
           mv coverage-results/.coverage.* .
           # See https://github.com/nedbat/coveragepy/issues/903
           python scripts/coverage_winpath_sanitize.py .coverage.*
           tox -e coverage
+          coveralls
