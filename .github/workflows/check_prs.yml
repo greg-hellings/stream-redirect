@@ -1,4 +1,4 @@
-name: Check Pull Request
+name: Check Push/PR
 
 on:
   push:
@@ -78,13 +78,11 @@ jobs:
           name: coverage-results
       - name: Run coverage
         run: |
-          python -m pip install tox
+          python -m pip install tox coveralls
           mv coverage-results/.coverage.* .
           # See https://github.com/nedbat/coveragepy/issues/903
           python scripts/coverage_winpath_sanitize.py .coverage.*
           tox -e coverage
-      - name: Upload coverage
-        uses: coverallsapp/github-action@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: .coverage
+          coveralls
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.coveralls_token }}
