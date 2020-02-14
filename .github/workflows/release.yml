@@ -18,6 +18,9 @@ jobs:
           python -m pip install -U pip setuptools
           pip install -U wheel
           python setup.py build sdist bdist_wheel
+      - name: Get tag name
+        id: get_tag
+        run: echo ::set-output name=TAG::${GITHUB_REF#refs/tags/}
       - name: GitHub Release
         id: create_release
         uses: actions/create-release@v1
@@ -25,7 +28,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          release_name: Release ${{ steps.get_tag.outputs.TAG }}
           draft: false
           prerelease: false
       - name: Upload wheel to GitHub
@@ -34,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/stream_redirect-${{ github.ref }}-py3-none-any.whl
+          asset_path: dist/stream_redirect-${{ steps.get_tag.outputs.TAG }}-py3-none-any.whl
           asset_name: Python 3 wheel
           asset_content_type: application/zip
       - name: Upload tarball to GitHub
@@ -43,7 +46,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: dist/stream-redirect-${{ github.ref }}.tar.gz
+          asset_path: dist/stream-redirect-${{ steps.get_tag.outputs.TAG }}.tar.gz
           asset_name: Python source tar
           asset_content_type: application/x-compressed-tar
       - name: PyPI release
