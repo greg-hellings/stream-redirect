@@ -8,7 +8,7 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    tasks:
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@master
         with:
