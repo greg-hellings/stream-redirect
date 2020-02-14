@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='stream_redirect',
+    name='stream-redirect',
     description='Collect and redirect stdout and stderr from a python program',
     long_description_content_type="text/markdown",
     long_description=io.open('README.md', encoding='utf-8').read(),
