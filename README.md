@@ -1,4 +1,4 @@
-![CI Status](https://github.com/greg-hellings/stream-redirect/workflows/Check%20Push/PR/badge.svg)
+[![CI Status](https://github.com/greg-hellings/stream-redirect/workflows/Check%20Push/PR/badge.svg)](https://github.com/greg-hellings/stream-redirect/actions)
 [![codecov](https://codecov.io/gh/greg-hellings/stream-redirect/branch/master/graph/badge.svg)](https://codecov.io/gh/greg-hellings/stream-redirect)
 [![PyPI version](https://badge.fury.io/py/stream-redirect.svg)](https://badge.fury.io/py/stream-redirect)
 
